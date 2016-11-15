@@ -5,37 +5,9 @@
  *
  */
 
-
-/* hard-coded data! */
-// var sampleAlbums = [];
-// sampleAlbums.push({
-//     artistName: 'Ladyhawke',
-//     name: 'Ladyhawke',
-//     releaseDate: '2008, November 18',
-//     genres: ['new wave', 'indie rock', 'synth pop']
-// });
-// sampleAlbums.push({
-//     artistName: 'The Knife',
-//     name: 'Silent Shout',
-//     releaseDate: '2006, February 17',
-//     genres: ['synth pop', 'electronica', 'experimental']
-// });
-// sampleAlbums.push({
-//     artistName: 'Juno Reactor',
-//     name: 'Shango',
-//     releaseDate: '2000, October 9',
-//     genres: ['electronic', 'goa trance', 'tribal house']
-// });
-// sampleAlbums.push({
-//     artistName: 'Philip Wesley',
-//     name: 'Dark Night of the Soul',
-//     releaseDate: '2008, September 12',
-//     genres: ['piano']
-// });
-/* end of hard-coded data */
-
-
 var template;
+var $albumsList = $('#albumTarget');
+var allAlbums = [];
 
 
 $(document).ready(function() {
@@ -49,7 +21,19 @@ $(document).ready(function() {
         error: handleGetAlbumError
     });
 
+    $('#newAlbumForm').on('submit', function(e) {
+        e.preventDefault();
+        console.log('new album serialized', $(this).serializeArray());
+        $.ajax({
+            method: 'POST',
+            url: '/api/albums',
+            data: $(this).serialize(),
+            success: newAlbumSuccess,
+            error: newAlbumError
+        });
+    });
 });
+
 
 function handleGetAlbumSuccess(data) {
     var receivedAlbum = data.albums;
@@ -59,8 +43,18 @@ function handleGetAlbumSuccess(data) {
     });
 }
 
-function handleGetAlbumError(a, b, c){
-  console.log("Error!");
+function handleGetAlbumError(a, b, c) {
+    console.log("Error!");
+}
+
+function newAlbumSuccess(album) {
+    $('#newAlbumForm input').val('');
+    renderAlbum(album);
+
+}
+
+function newAlbumError() {
+    console.log('newAlbum error!');
 }
 
 // this function takes a single album and renders it to the page
